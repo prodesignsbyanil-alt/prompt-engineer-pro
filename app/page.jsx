@@ -158,7 +158,7 @@ export default function Page() {
     if (styles.withoutTypography) styleBits.push("without typography");
 
     const lines = [
-      `Create exactly 1 stock-ready icon design about: ${subject}. This prompt corresponds to design #${i + 1} of ${totalCount}.`,
+      `Create exactly 1 stock-ready icon design about: ${subject}. `,
       `Variant angle/action/elements: ${angle}; ${act}; add ${elem}.`,
       `Style: ${styleBits.length ? styleBits.join(", ") : "clean"}.`,
       `Background: white. Composition must be clear and tracing-friendly.`,
@@ -170,7 +170,7 @@ export default function Page() {
       styles.silhouette ? `If silhouette is selected, emphasize clear outer contours and balanced negative space.` : null,
       styles.flatColor ? `If flat color is selected, use solid fills only; no shadows, no gradients, no glow.` : null,
       `Deliver icons suitable for grids and consistent line/shape language.`,
-      `Minimum description length target: ~${promptLength}+ characters.`,
+      // `Minimum description length target: ~${promptLength}+ characters.`,
     ].filter(Boolean);
 
     if (bundleEnabled) {
