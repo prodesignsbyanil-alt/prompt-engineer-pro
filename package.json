@@ -1,0 +1,26 @@
+{
+  "name": "prompt-engineer-pro",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Prompt Engineer Pro \u2014 Next.js dashboard (GitHub + Vercel ready)",
+  "scripts": {
+    "dev": "next dev -p 3010",
+    "build": "next build",
+    "start": "next start -p 4000"
+  },
+  "engines": {
+    "node": ">=18.17.0"
+  },
+  "dependencies": {
+    "next": "14.2.5",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "lucide-react": "^0.441.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.41",
+    "tailwindcss": "^3.4.13"
+  }
+}
