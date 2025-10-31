@@ -1,0 +1,1 @@
+# Prompt Engineer Pro — Stable\n\nProviders:\n- **ChatGPT** (OpenAI)\n- **Gemini** via proxy `/api/gemini` (avoids CORS)\n- **Stability AI** (text endpoint placeholder)\n\nRun:\n```bash\nnpm install\nnpm run dev\n```\n
