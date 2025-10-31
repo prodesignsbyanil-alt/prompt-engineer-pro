@@ -200,11 +200,88 @@ export default function Page() {
     return body.trim();
   }
 
-  function generateNow() {
-    if (!isAuthed) { toastPush({ type: "error", title: "Login required", desc: "Please login with a Gmail address first." }); return; }
-    const out = Array.from({ length: Number(totalCount) }, (_, i) => buildOnePrompt(i));
-    setPrompts(out);
-    toastPush({ type: "neutral", title: "Preview updated", desc: `${out.length} prompts generated.` });
+   async function generateNow() {
+    if (!isAuthed) {
+      toastPush({ type: "error", title: "Login required", desc: "Please login with a Gmail address first." });
+      return;
+    }
+
+    const key = localStorage.getItem(`pep:key:${provider}`) || "";
+    if (!key) {
+      toastPush({ type: "error", title: "API key missing", desc: `Please save a valid ${provider} API key first.` });
+      return;
+    }
+
+    setPrompts([]);
+    toastPush({ type: "neutral", title: "Generating…", desc: `Asking ${provider} to create ${totalCount} prompt(s)…` });
+
+    const results = [];
+
+    for (let i = 0; i < totalCount; i++) {
+      const promptInput = buildOnePrompt(i);
+      let output = "";
+
+      try {
+        // 🔹 ChatGPT (OpenAI)
+        if (provider === "ChatGPT" || provider === "DALL·E (OpenAI)") {
+          const res = await fetch("https://api.openai.com/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${key}`,
+            },
+            body: JSON.stringify({
+              model: "gpt-4o-mini",
+              messages: [{ role: "user", content: `Write a detailed design prompt: ${promptInput}` }],
+            }),
+          });
+          const data = await res.json();
+          output = data?.choices?.[0]?.message?.content?.trim() || "";
+        }
+
+        // 🔹 Gemini (Google)
+        else if (provider === "Gemini" || provider === "Gemini Banana") {
+          const res = await fetch("/api/gemini", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ prompt: promptInput, key }),
+          });
+          const data = await res.json();
+          output = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
+        }
+
+        // 🔹 Stability AI
+        else if (provider === "Stability AI") {
+          const res = await fetch("https://api.stability.ai/v2beta/stable-image/generate", {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${key}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              prompt: `Write a stock vector design prompt: ${promptInput}`,
+            }),
+          });
+          const data = await res.json();
+          output = data?.prompt || "";
+        }
+
+        // 🔹 Bing AI / Leonardo (placeholder)
+        else {
+          output = promptInput + " [⚠️ This provider API not yet implemented]";
+        }
+
+        results.push(output || "No response");
+        await new Promise(r => setTimeout(r, 1500)); // rate-limit delay
+
+      } catch (err) {
+        console.error(err);
+        results.push("Error generating prompt");
+      }
+    }
+
+    setPrompts(results);
+    toastPush({ type: "success", title: "Prompts ready", desc: `${results.length} via ${provider}` });
   }
 
   function handleCopy(text) {
